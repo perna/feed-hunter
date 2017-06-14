@@ -30,8 +30,16 @@ class ItunesSpider(scrapy.Spider):
             url = item.xpath('./a/@href').extract_first()
             yield scrapy.Request(url=url, callback=self.parse_page) 
 
-
+    
     def parse_page(self, response):
+        items = response.xpath('//*[@id="selectedgenre"]/ul[2]/li')
+
+        for item in items:
+            page = item.xpath('./a/@href').extract_first()
+            yield scrapy.Request(url=page, callback=self.parse_list)
+
+
+    def parse_list(self, response):
         for url in response.xpath('//*[@id="selectedcontent"]/div/ul/li'):
             podcast = url.xpath('./a')
             yield {
